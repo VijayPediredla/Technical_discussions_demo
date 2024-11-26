@@ -3,11 +3,7 @@
     "problem_id": "72",
     "problem_description_main": "Implement a 2D Ising model with periodic boundary conditions using the Metropolis-Hastings algorithm. The lattice has dimensions (N, N) with spin interaction energy, J = 1, and no external magnetic field, B = 0. Write a Python script to compute the transition temperature by analyzing magnetization squared at different temperatures.",
     "problem_background_main": "The 2D Ising model is defined by a lattice of spins (+1 or -1) with interaction energy represented by Hamiltonian, given by:\n\\begin{align}\n H = -J \\sum_{\\langle i,j \\rangle} s_i s_j,\n \\end{align}\n where $J$ is the coupling constant (here J = 1), $\\langle i,j \\rangle$ are nearest neighbors, and $s_i,s_j$ are spins at site i and j respectively. The transition temperature can be estimated by examining changes in the magnetization squared ($M^2$) as a function of temperature.\n\nThe Metropolis-Hastings algorithm is used to simulate the dynamics of the system:\n 1. Propose flipping a spin.\n2. Calculate the change in energy $\\Delta E$ due to the flip.\n 3. Accept the flip with probability $A = \\min(1, \\exp(-\\beta \\Delta E))$, where $\\beta = 1/T$.\nThe system is evolved for a specified number of sweeps, with measurements taken to calculate $M^2$.",
-    "general_solution":"def isingdef ising_model(Ts, N, nsweeps):\n"
-        "    \"\"\"Simulate the Ising model and compute magnetization squared/N^4 for each temperature.\"\"\"\n"
-        "    results = scan_T(Ts, N, nsweeps)\n"
-        "    T_transition = calc_transition(Ts, results)\n"
-        "    return T_transition"
+    "general_solution":"def ising_model(Ts, N, nsweeps):\n Simulate the Ising model and compute magnetization squared/N^4 for each temperature.\n results = scan_T(Ts, N, nsweeps)\n T_transition = calc_transition(Ts, results)\n return T_transition",
     "problem_io": "'''\nInput: \nT (float): temperature\nN (int): system size along an axis\nnsweeps: number of iterations to go over all spins\n\nOutput:\nTransition temperature\n\n'''",
     "required_dependencies": "import numpy as np",
     "sub_steps": [
