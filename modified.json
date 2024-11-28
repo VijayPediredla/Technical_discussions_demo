@@ -17,48 +17,27 @@
             ],
             "return_line": "",
             "step_background": "In a periodic 2D lattice,  each spin has four nearest neighbors: left, above, right, and below. The 4 nearest neighbors of each spin site `(i, j)` are `(i - 1, j), (i, j + 1), (i + 1, j), (i, j - 1)`. The neighbors of a spin at `(i, j)` wrap around to the other side when they exceed the boundaries.",
-            "ground_truth_code": "def neighbor_list(site: tuple, N: int) -> list:\n    '''Return all nearest neighbors of a site (i, j) in a periodic lattice.\n        Args:\n             site: A tuple (i, j) representing the site indices.\n             N (int): The size of the lattice along one dimension.\n             Returns: a list of tuples, [(i_left, j_left), (i_above, j_above), (i_right, j_right), (i_below, j_below)''']\n    i, j = site\n    neighbors = [\n        ((i - 1) % N, j),  # left\n        (i, (j + 1) % N),  # above\n        ((i + 1) % N, j),  # right\n        (i, (j - 1) % N)   # below\n    ]\n    return neighbors"
+            "ground_truth_code": "def neighbor_list(site: tuple, N: int) -> list:\n    '''Return all nearest neighbors of a site (i, j) in a periodic lattice.\n        Args:\n             site: A tuple (i, j) representing the site indices.\n             N (int): The size of the lattice along one dimension.\n             Returns: a list of tuples, [(i_left, j_left), (i_above, j_above), (i_right, j_right), (i_below, j_below)'''\n    i, j = site\n    neighbors = [\n        ((i - 1) % N, j),  # left\n        (i, (j + 1) % N),  # above\n        ((i + 1) % N, j),  # right\n        (i, (j - 1) % N)   # below\n    ]\n    return neighbors"
         },
         {
             "step_number": "72.2",
             "step_name": "energy_site",
-            "step_description_prompt": "Write a function to calculate the energy contribution of a spin at site `(i, j)`in the lattice.\n   \\n\\n\\\\[\\nE_{ij} = -s_{ij} \\\\sum_{\\\\text{neighbors}} s_{kl}\\n\\\\]\\n\\nwhere \\( s_{ij} \\) is the spin at site `(i, j)`, and the sum runs over its nearest neighbors.\",",
-            "function_header": "def energy_site(i, j, lattice):\n    '''Calculate the energy of site (i, j)\n    Args:\n        i (int): site index along x\n        j (int): site index along y\n        lattice (np.array): shape (N, N), a 2D array +1 and -1\n    Return:\n        float: energy of site (i, j)\n    '''",
+            "step_description_prompt": "Write a function to calculate the energy contribution of a spin at site `(i, j)`in the lattice.",
+            "function_header": "def energy_site(i: int, j: int, lattice: np.ndarray) -> float:\n    '''Calculate the energy contribution of a spin at site (i, j)\n    Args:\n        i (int): Row index of the spin.\n        j (int): Column index of the spin.\n        lattice (np.array): A 2D array representing lattice of shape (N, N)\n        Returns: The energy (float value) contribution of site (i, j)'''",
             "test_cases": [
-                "i = 1",
-                "j = 2",
-                "lattice = np.array([[ 1, -1,  1,  1],[-1, -1,  1,  1],[-1, -1,  1,  1],[ 1, -1, -1, -1]])",
-                "assert np.allclose(energy_site(i, j, lattice), target)",
-                "i = 1",
-                "j = 2",
-                "lattice = np.array([[ 1, -1,  1,  1],[-1, 1,  1,  1],[-1, -1,  1,  1],[ 1, -1, -1, -1]])",
-                "assert np.allclose(energy_site(i, j, lattice), target)",
-                "i = 1",
-                "j = 2",
-                "lattice = np.array([[ 1, -1,  1,  1],[-1, -1,  1,  -1],[-1, -1,  1,  1],[ 1, -1, -1, -1]])",
-                "assert np.allclose(energy_site(i, j, lattice), target)",
-                "def test_energy_site():",
-                "    params = {",
-                "        'i': 1, 'j': 2,",
-                "        'lattice': np.array([",
-                "            [ 1, -1,  1,  1],",
-                "            [-1, -1,  1,  1],",
-                "            [-1, -1,  1,  1],",
-                "            [ 1, -1, -1, -1]",
-                "        ])",
-                "    }",
-                "    return energy_site(**params) == -1*(-1 + 3)",
-                "assert test_energy_site() == target"
+                "#Test 1:\\nlattice = np.array([[ 1, -1,  1,  1],\\n                     [-1, -1,  1,  1],\\n                     [-1, -1,  1,  1],\\n                     [ 1, -1, -1, -1]])\\ni, j = 1, 2\\nexpected = -1 * (lattice[0,2] + lattice[1,3] + lattice[2,2] + lattice[1,1])\\nassert energy_site(i, j, lattice) == expected, f\"Expected {expected}, but got {result}\"",
+                "#Test 2:\\nlattice = np.array([[ 1, -1,  1,  1],\\n                     [-1,  1,  1,  1],\\n                     [-1, -1,  1,  1],\\n                     [ 1, -1, -1, -1]])\\ni, j = 1, 2\\nexpected = -1 * (lattice[0,2] + lattice[1,3] + lattice[2,2] + lattice[1,1])\\nassert energy_site(i, j, lattice) == expected, f\"Expected {expected}, but got {result}",
+                " #Test 3:\\nlattice = np.array([[ 1, -1,  1,  1],\\n                     [-1, -1,  1, -1],\\n                     [-1, -1,  1,  1],\\n                     [ 1, -1, -1, -1]])\\ni, j = 1, 2\\nexpected = -1 * (lattice[0,2] + lattice[1,3] + lattice[2,2] + lattice[1,1])\\nassert energy_site(i, j, lattice) == expected, f\"Expected {expected}, but got {result}\""
             ],
             "return_line": "",
-            "step_background": "The energy contribution of a spin on site `(i, j)` is given by:\n\n\\begin{align}\nE_{ij}&= -s_a \\sum_{\\langle ab \\rangle} s_b.\n\\end{align}\n`E_{ij}`\n` \\n\\n\\\\[\\nE_{ij} = -s_{ij} \\\\sum_{\\\\text{neighbors}} s_{kl}\\n\\\\]\\n\\nwhere \\( s_{ij} \\)`\n`\\begin{align}\nE_{ij}&= -s_a \\sum_{\\langle ab \\rangle} s_b.\n\\end{align}`",
-            "ground_truth_code": "def energy_site(i, j, lattice):\n    N = lattice.shape[0]\n    spin = lattice[i, j]\n    neighbors = neighbor_list((i, j), N)\n    energy = -spin * sum(lattice[x, y] for x, y in neighbors)\n    return energy"
+            "step_background": "The energy contribution of a spin on site `(i, j)` is given by:\n \\n\\\\[\\nE_{ij} = -s_{ij} \\\\sum_{\\\\text{neighbors}} s_{kl}\\n\\\\]\\n\\nwhere \\( s_{ij} \\) is the spin at site `(i, j)`, and the sum runs over its nearest neighbors.",
+            "ground_truth_code": "def energy_site(i: int, j: int, lattice: np.ndarray) -> float:\n    '''Calculate the energy contribution of a spin at site (i, j)\n    Args:\n        i (int): Row index of the spin.\n        j (int): Column index of the spin.\n        lattice (np.array): A 2D array representing lattice of shape (N, N)\n        Returns: The energy (float value) contribution of site (i, j)'''\n    N = lattice.shape[0]\n    spin = lattice[i, j]\n    neighbors = neighbor_list((i, j), N)\n    energy = -spin * sum(lattice[ni, nj] for ni, nj in neighbors)\n    return energy"
         },
         {
             "step_number": "72.3",
             "step_name": "total_energy",
             "step_description_prompt": "Write a function to calculate the total energy for all the site `(i, j)` of the periodic Ising model with dimension `(N, N)` given a 2D `lattice` whose element is either 1 or -1def energy(lattice):\n    N = lattice.shape[0]\n    total_energy = 0\n    for i in range(N):\n        for j in range(N):\n            total_energy += energy_site(i, j, lattice)\n    return total_energy / 2  # Avoid double counting\n",
-            "function_header": "def energy(lattice):\n    '''calculate the total energy for the site (i, j) of the periodic Ising model with dimension (N, N)\n    Args: lattice (np.array): shape (N, N), a 2D array +1 and -1\n    Return:\n        float: energy \n    '''",
+            "function_header": "def total_energy(lattice: np.ndarray) -> float:    \n    '''Calculate the total energy of the lattice.\n    Args:\n    lattice: A 2D NumPy array representing the spin lattice.\n    Returns: The total energy (float value) of the lattice.'''",
             "test_cases": [
                 "lattice = np.array([[1, 1, 1, -1],[-1, 1, -1, -1],[-1, -1, 1, 1],[-1, 1, 1, 1]])",
                 "assert np.allclose(energy(lattice), target)",
@@ -80,7 +59,7 @@
             ],
             "return_line": "",
             "step_background": "Background\nThe Hamiltonian is\n\n\\begin{align}\nH &= -J \\sum_{\\langle ab \\rangle} s_a s_b - B \\sum_{a} s_a \\\\\n&= - \\sum_{\\langle ab \\rangle} s_a s_b,\n\\end{align}\n\nwhere $\\langle ij \\rangle$ iterates over unique pairs of nearest neighbors",
-            "ground_truth_code": "def energy(lattice):\r\n    N = lattice.shape[0]\r\n    total_energy = 0\r\n    for i in range(N):\r\n        for j in range(N):\r\n            total_energy += energy_site(i, j, lattice)\r\n    return total_energy / 2  # Avoid double counting\r\n"
+            "ground_truth_code": "def total_energy(lattice: np.ndarray) -> float:    \n    '''Calculate the total energy of the lattice.\n    Args:\n    lattice: A 2D NumPy array representing the spin lattice.\n    Returns: The total energy (float value) of the lattice.'''\n    N = lattice.shape[0]\n    total_energy = 0\n    for i in range(N):\n        for j in range(N):\n            spin = lattice[i, j]            \n            neighbors = [((i + 1) % N, j), (i, (j + 1) % N)]  # Avoid double counting\n            total_energy += -spin * sum(lattice[ni, nj] for ni, nj in neighbors)\n    return total_energy"
         },
         {
             "step_number": "72.4",
