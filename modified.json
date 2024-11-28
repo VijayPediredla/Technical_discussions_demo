@@ -22,7 +22,7 @@
         {
             "step_number": "72.2",
             "step_name": "energy_site",
-            "step_description_prompt": "Write a function to calculate the energy contribution of a spin at site `(i, j)`in the lattice\n   \\n\\n\\\\[\\nE_{ij} = -s_{ij} \\\\sum_{\\\\text{neighbors}} s_{kl}\\n\\\\]\\n\\nwhere \\( s_{ij} \\) is the spin at site (i, j), and the sum runs over its nearest neighbors.\",",
+            "step_description_prompt": "Write a function to calculate the energy contribution of a spin at site `(i, j)`in the lattice\n   `\\n\\n\\\\[\\nE_{ij} = -s_{ij} \\\\sum_{\\\\text{neighbors}} s_{kl}\\n\\\\]\\n\\nwhere \\( s_{ij} \\)` is the spin at site (i, j), and the sum runs over its nearest neighbors.\",",
             "function_header": "def energy_site(i, j, lattice):\n    '''Calculate the energy of site (i, j)\n    Args:\n        i (int): site index along x\n        j (int): site index along y\n        lattice (np.array): shape (N, N), a 2D array +1 and -1\n    Return:\n        float: energy of site (i, j)\n    '''",
             "test_cases": [
                 "i = 1",
@@ -51,7 +51,7 @@
                 "assert test_energy_site() == target"
             ],
             "return_line": "",
-            "step_background": "The energy contribution of a spin on site (i, j) is given by:\n\n\\begin{align}\nE_{ij}&= -s_a \\sum_{\\langle ab \\rangle} s_b.\n\\end{align}",
+            "step_background": "The energy contribution of a spin on site `(i, j)` is given by:\n\n`\\begin{align}\nE_{ij}&= -s_a \\sum_{\\langle ab \\rangle} s_b.\n\\end{align}`\n\n`E_ij``E_{ij}`",
             "ground_truth_code": "def energy_site(i, j, lattice):\n    N = lattice.shape[0]\n    spin = lattice[i, j]\n    neighbors = neighbor_list((i, j), N)\n    energy = -spin * sum(lattice[x, y] for x, y in neighbors)\n    return energy"
         },
         {
