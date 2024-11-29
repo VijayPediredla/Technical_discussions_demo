@@ -91,64 +91,45 @@
         {
             "step_number": "72.7",
             "step_name": "run",
-            "step_description_prompt": "Write a Python function that performs Metropolis algorithm to flip spins for `nsweeps` times and collects magnetization^2 / N^4. Inputs are temperature, N, nsweeps",
-            "function_header": "def run(T, N, nsweeps):\n    '''Performs Metropolis to flip spins for nsweeps times and collect iteration, temperature, energy, and magnetization^2 in a dataframe\n    Args: \n        T (float): temperature\n        N (int): system size along an axis\n        nsweeps: number of iterations to go over all spins\n    Return:\n        mag2: (numpy array) magnetization^2\n    '''",
+            "step_description_prompt": "Write a function  to run the 2D Ising model simulation for a given temperature.",
+            "function_header": "def run_simulation(T: float, N: int, nsweeps: int) -> np.ndarray:\n    '''Run the Ising model simulation at temperature T.\n    Args:\n    T (float): Temperature of the simulation.\n    N: Size of the lattice (N x N).\n    nsweeps: Number of sweeps to perform.\n    Returns mag2: magnetization^2, An array of magnetization squared values collected during the simulation.'''",
             "test_cases": [
-                "np.random.seed(0)",
-                "assert np.allclose(run(1.6, 3, 10), target)",
-                "np.random.seed(0)",
-                "assert np.allclose(run(2.1, 3, 10), target)",
-                "np.random.seed(0)",
-                "assert np.allclose(run(2.15, 3, 10), target)"
+                "#Test 1:\\nnp.random.seed(0)\\nmag2 = run_simulation(T=1.6, N=3, nsweeps=10)\\nassert len(mag2) == 10, f\"Expected length of mag2 is {10}, but got {len(mag2)}\"",
+                "#Test 2:\\nnp.random.seed(0)\\nmag2 = run_simulation(T=2.1, N=3, nsweeps=10)\\nassert len(mag2) == 10, f\"Expected length of mag2 is {10}, but got {len(mag2)}\"",
+                "#Test 3:\\nnp.random.seed(0)\\nmag2 = run_simulation(T=2.15, N=3, nsweeps=10)\\nassert len(mag2) == 10, f\"Expected length of mag2 is {10}, but got {len(mag2)}\""
             ],
             "return_line": "",
-            "step_background": "",
-            "ground_truth_code": "def run(T, N, nsweeps):\r\n    beta = 1.0 / T\r\n    lattice = np.random.choice([-1, 1], size=(N, N))\r\n    magnetization_sq = []\r\n    \r\n    for _ in range(nsweeps):\r\n        lattice = flip(lattice, beta)\r\n        mag = magnetization(lattice)\r\n        magnetization_sq.append(mag**2 / (N**4))\r\n    \r\n    return np.mean(magnetization_sq)\r\n"
+            "step_background": "The simulation involves performing multiple sweeps over the lattice of size `N` and collecting magnetization squared values to analyze the system's behavior at different temperatures.",
+            "ground_truth_code": "def run_simulation(T: float, N: int, nsweeps: int) -> np.ndarray:\n    '''Run the Ising model simulation at temperature T.\n    Args:\n    T (float): Temperature of the simulation.\n    N: Size of the lattice (N x N).\n    nsweeps: Number of sweeps to perform.\n    Returns mag2: magnetization^2, An array of magnetization squared values collected during the simulation.'''\n    beta = 1.0 / T\n    lattice = np.random.choice([-1, 1], size=(N, N))\n    mag2 = []\n    for _ in range(nsweeps):\n        lattice = metropolis_sweep(lattice, beta)\n        mag = magnetization(lattice)\n        mag2.append(mag ** 2 / (N**4))\n    return np.array(mag2)"
         },
         {
             "step_number": "72.8",
             "step_name": "scan_temperatures",
-            "step_description_prompt": "Write a Python that runs the Ising model for a given list of `temperatures`, `N`, and `nsweeps` returns a list of magnetization^2/N^4 at each temperature.",
-            "function_header": "def scan_T(Ts, N, nsweeps):\n    '''Run over several given temperatures.\n    Args:\n        Ts: list of temperature\n        N: system size in one axis\n        nsweeps: number of iterations to go over all spins\n    Return:\n        mag2_avg: list of magnetization^2 / N^4, each element is the value for each temperature\n    '''",
+            "step_description_prompt": "Write a function to run simulations over a range of temperatures.",
+            "function_header": "def scan_temperatures(Ts: list, N: int, nsweeps: int) -> list:\n    '''Run simulations over a range of temperatures.\n    Args:\n    Ts: List of temperatures to simulate.\n    N: Size of the lattice (N x N).\n    nsweeps: Number of sweeps to perform at each temperature.\n    Returns: A list of average magnetization squared values for each temperature.'''",
             "test_cases": [
-                "np.random.seed(0)",
-                "assert np.allclose(scan_T(Ts=[1.6, 2.10, 2.15, 2.20, 2.25, 2.30, 2.35, 2.40, 2.8], N=10, nsweeps=10), target)",
-                "np.random.seed(0)",
-                "assert np.allclose(scan_T(Ts=[1.6, 2.10, 2.15, 2.20, 2.25, 2.30, 2.35, 2.40, 2.8], N=20, nsweeps=10), target)",
-                "np.random.seed(0)",
-                "assert np.allclose(scan_T(Ts=[1.6, 2.10, 2.15, 2.20, 2.25, 2.30, 2.35, 2.40, 2.8], N=30, nsweeps=10), target)"
+                "#Test 1:\\nnp.random.seed(0)\\nTs = [1.6, 2.10, 2.15, 2.20, 2.25, 2.30, 2.35, 2.40, 2.8]\\nmag2_avg = scan_temperatures(Ts, N=10, nsweeps=5)\\nassert len(mag2_avg) == len(Ts), f\"Expected length of mag2_avg is {len(Ts)}, but got {len(mag2_avg)}\"",
+                "#Test 2:\\nnp.random.seed(0)\\nTs = [2.0, 2.2, 2.4]\\nmag2_avg = scan_temperatures(Ts, N=20, nsweeps=10)\\nassert len(mag2_avg) == len(Ts), f\"Expected length of mag2_avg is {len(Ts)}, but got {len(mag2_avg)}\"",
+                "#Test 3:\\nnp.random.seed(0)\\nTs = [2.1, 2.3, 2.5]\\nmag2_avg = scan_temperatures(Ts, N=30, nsweeps=10)\\nassert len(mag2_avg) == len(Ts),  f\"Expected length of mag2_avg is {len(Ts)}, but got {len(mag2_avg)}\""
             ],
             "return_line": "",
-            "step_background": "",
-            "ground_truth_code": "def scan_T(Ts, N, nsweeps):\r\n    results = []\r\n    for T in Ts:\r\n        results.append(run(T, N, nsweeps))\r\n    return results\r\n"
+            "step_background": "By simulating the system of size `N` at various temperatures, we could observe how the magnetization changes and estimate the critical temperature.",
+            "ground_truth_code": "def scan_temperatures(Ts: list, N: int, nsweeps: int) -> list:\n    '''Run simulations over a range of temperatures.\n    Args:\n    Ts: List of temperatures to simulate.\n    N: Size of the lattice (N x N).\n    nsweeps: Number of sweeps to perform at each temperature.\n    Returns: A list of average magnetization squared values for each temperature.'''\n    mag2_avg = []\n    for T in Ts:\n        mag2 = run_simulation(T, N, nsweeps)\n        mag2_avg.append(np.mean(mag2))\n    return mag2_avg"
         },
         {
             "step_number": "72.9",
             "step_name": "calc_transition_temperature",
-            "step_description_prompt": "The function `calc_transition` identifies the transition temperature in a physics simulation by analyzing the changes in magnetization squared across different temperatures. It calculates the derivative of magnetization squared with respect to temperature and finds the temperature at which this derivative is minimized, indicating a phase transition. The function returns this critical temperature as a float.",
-            "function_header": "def calc_transition(T_list, mag2_list):\n    '''Calculates the transition temperature by taking derivative\n    Args:\n        T_list: list of temperatures\n        mag2_list: list of magnetization^2/N^4 at each temperature\n    Return:\n        float: Transition temperature\n    '''",
+            "step_description_prompt": "Write a function to calculate the critical temperature from magnetization data.",
+            "function_header": "def calc_transition_temperature(T_list: list, mag2_list: list) -> float:\n    '''Calculate the critical temperature from magnetization data.\n    Args:\n    T_list: List of temperatures.\n    mag2_list: List of average magnetization squared values corresponding to T_list.\n    Returns: The estimated critical temperature.'''",
             "test_cases": [
-                "np.random.seed(0)",
-                "Ts = [1.6, 2.10, 2.15, 2.20, 2.25, 2.30, 2.35, 2.40, 2.8]",
-                "mag2 = scan_T(Ts=Ts, N=5, nsweeps=100)",
-                "assert np.allclose(calc_transition(Ts, mag2), target)",
-                "np.random.seed(0)",
-                "Ts = [1.6, 2.10, 2.15, 2.20, 2.25, 2.30, 2.35, 2.40, 2.8]",
-                "mag2 = scan_T(Ts=Ts, N=10, nsweeps=100)",
-                "assert np.allclose(calc_transition(Ts, mag2), target)",
-                "np.random.seed(0)",
-                "Ts = [1.6, 2.10, 2.15, 2.20, 2.25, 2.30, 2.35, 2.40, 2.8]",
-                "mag2 = scan_T(Ts=Ts, N=20, nsweeps=100)",
-                "assert np.allclose(calc_transition(Ts, mag2), target)",
-                "np.random.seed(0)",
-                "Ts = [1.6, 2.10, 2.15, 2.20, 2.25, 2.30, 2.35, 2.40, 2.8]",
-                "mag2 = scan_T(Ts=Ts, N=30, nsweeps=2000)",
-                "T_transition = calc_transition(Ts, mag2)",
-                "assert (np.abs(T_transition - 2.269) < 0.2) == target"
+                "#Test 1:\\nnp.random.seed(0)\\nTs =  [1.6, 2.10, 2.15, 2.20, 2.25, 2.30, 2.35, 2.40, 2.8]\\nmag2 = scan_T(Ts=Ts, N=5, nsweeps=100)\\nT_transition = calc_transition_temperature(Ts, mag2)\\nassert np.allclose(T_transition, 2.3, atol=0.1),  f\"Expected T_transition is {2.3}, but got {T_transition}\"",
+                "#Test 2:\\nnp.random.seed(0)\\nTs = [1.0, 2.0, 3.0]\\nmag2 = scan_T(Ts=Ts, N=10, nsweeps=100)\\nT_transition = calc_transition_temperature(Ts, mag2)\\nassert np.allclose(T_transition, 3.0, atol=0.1), f\"Expected T_transition is {3.0}, but got {T_transition}\"",
+                "# Test 3:\\nnp.random.seed(0)\\nTs = [2.0, 2.2, 2.269, 2.4, 2.6]",
+                "mag2 =  scan_T(Ts=Ts, N=30, nsweeps=200)\\nT_transition = calc_transition_temperature(Ts, mag2)\\nassert np.allclose(T_transition, 2.269, atol=0.1),  f\"Expected T_transition is {2.269}, but got {T_transition}\""
             ],
             "return_line": " ",
-            "step_background": "",
-            "ground_truth_code": "def calc_transition(T_list, mag2_list):\r\n    mag2_array = np.array(mag2_list)\r\n    T_array = np.array(T_list)\r\n    d_mag2_dT = np.gradient(mag2_array, T_array)\r\n    transition_idx = np.argmin(np.abs(d_mag2_dT))\r\n    return T_array[transition_idx]\r\n"
+            "step_background": "The critical temperature is defined as the transition temperature in the simulation by analyzing the changes in magnetization squared across different temperatures. It calculates the derivative of magnetization squared with respect to temperature and finds the temperature at which this derivative is minimized (i.e., the magnetization changes most rapidly), indicating a phase transition.",
+            "ground_truth_code": "def calc_transition_temperature(T_list: list, mag2_list: list) -> float:\n    '''Calculate the critical temperature from magnetization data.\n    Args:\n    T_list: List of temperatures.\n    mag2_list: List of average magnetization squared values corresponding to T_list.\n    Returns: The estimated critical temperature.'''\n    dmag2 = np.gradient(mag2_list, T_list)\n    T_transition = T_list[np.argmin(dmag2)]\n    return T_transition"
         }
     ],
     "general_tests": [
