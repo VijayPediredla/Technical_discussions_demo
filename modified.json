@@ -30,7 +30,7 @@
                 " #Test 3:\\nlattice = np.array([[ 1, -1,  1,  1], [-1, -1,  1, -1], [-1, -1,  1,  1], [ 1, -1, -1, -1]])\\ni, j = 1, 2\\nexpected = -1 * (lattice[0,2] + lattice[1,3] + lattice[2,2] + lattice[1,1])\\nresult = energy_site(i, j, lattice)\\nassert result == expected, f\"Expected {expected}, but got {result}\""
             ],
             "return_line": "",
-            "step_background": "The energy contribution of a spin on site `(i, j)` is given by:\n $[\\nE_{ij} = -s_{ij} \\sum_{\\text{neighbors}} s_{kl}\\n\\\\]$\nwhere $\\( s_{ij} \\)$ is the spin at site `(i, j)`, and the sum runs over its nearest neighbors.",
+            "step_background": "The energy contribution of a spin on site `(i, j)` is given by:\n $[E_{ij} = -s_{ij} \\sum_{\\text{neighbors}} s_{kl}]$\nwhere ($\\ s_{ij} $) is the spin at site `(i, j)`, and the sum runs over its nearest neighbors.",
             "ground_truth_code": "def energy_site(i: int, j: int, lattice: np.ndarray) -> float:\n    '''Calculate the energy contribution of a spin at site (i, j)\n    Args:\n        i (int): Row index of the spin.\n        j (int): Column index of the spin.\n        lattice (np.array): A 2D array representing lattice of shape (N, N)\n        Returns: The energy (float value) contribution of site (i, j)'''\n    N = lattice.shape[0]\n    spin = lattice[i, j]\n    neighbors = neighbor_list((i, j), N)\n    energy = -spin * sum(lattice[ni, nj] for ni, nj in neighbors)\n    return energy"
         },
         {
@@ -44,7 +44,7 @@
                 "#Test 3:\\nlattice = np.array([[-1, -1], [-1, -1]])\\nresult_E = total_energy(lattice)\\nexpected_E = -4 * 2\\nassert result_E == expected_E, f\"Expected {expected_E}, but got {result_E}\""
             ],
             "return_line": "",
-            "step_background": "The total energy, which is also represented as Hamiltonian is calculated by summing the energy contributions of all unique pairs of nearest neighbors to avoid double counting. This can be achieved by summing over each site and considering only the right and above neighbors.\n\nThe Hamiltonian is given by:\n$[H = -J \\sum_{\\langle ab \\rangle} s_a s_b - B \\sum_{a} s_a \\\\n&= - \\sum_{\\langle ab \\rangle} s_a s_b,\\]$\nwhere $\\langle ij \\rangle$ iterates over unique pairs of nearest neighbors.",
+            "step_background": "The total energy, which is also represented as Hamiltonian is calculated by summing the energy contributions of all unique pairs of nearest neighbors to avoid double counting. This can be achieved by summing over each site and considering only the right and above neighbors.\n\nThe Hamiltonian is given by:\n$H = -J \\sum_{\\langle ab \\rangle} s_a s_b - B \\sum_{a} s_a \\&= - \\sum_{\\langle ab \\rangle} s_a s_b,\\$\nwhere $\\langle ij \\rangle$ iterates over unique pairs of nearest neighbors.",
             "ground_truth_code": "def total_energy(lattice: np.ndarray) -> float:    \n    '''Calculate the total energy of the lattice.\n    Args:\n    lattice: A 2D NumPy array representing the spin lattice.\n    Returns: The total energy (float value) of the lattice.'''\n    N = lattice.shape[0]\n    total_energy = 0\n    for i in range(N):\n        for j in range(N):\n            spin = lattice[i, j]            \n            neighbors = [((i + 1) % N, j), (i, (j + 1) % N)]  # Avoid double counting\n            total_energy += -spin * sum(lattice[ni, nj] for ni, nj in neighbors)\n    return total_energy"
         },
         {
